@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "oros.sereneseasonfix.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "sereneseasonfix.refmap.json",
+  "mixins": [
+    "MixinSeasonHandler",
+    "MixinTimeSkipHandler"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

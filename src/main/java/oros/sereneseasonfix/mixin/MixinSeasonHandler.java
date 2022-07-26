@@ -34,9 +34,6 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
         if (event.phase == TickEvent.Phase.END && !world.isRemote()) {
             long dayTime = world.getWorldInfo().getDayTime();
 
-            if (!lastDayTimes.containsKey(world))
-                lastDayTimes.put(world, dayTime);
-
             long lastDayTime = lastDayTimes.get(world);
             lastDayTimes.put(world, dayTime);
 
@@ -64,9 +61,14 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
             if (world.getGameTime() % 20 == 0) {
                 SeasonHandler.sendSeasonUpdate(world);
-                Sereneseasonfix.LOGGER.info("Oy those i am gonna print there numbers here every once in a while. " + dayTime + " " + savedData.seasonCycleTicks);
             }
             savedData.markDirty();
         }
+    }
+    @SubscribeEvent
+    public void onWorldLoad(WorldEvent.Load event)
+    {
+        World world = (World) event.getWorld();
+        lastDayTimes.put(world, world.getWorldInfo().getDayTime());
     }
 }

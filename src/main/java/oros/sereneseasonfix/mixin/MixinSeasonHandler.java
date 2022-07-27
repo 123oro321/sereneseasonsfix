@@ -48,8 +48,8 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
             SeasonSavedData savedData = SeasonHandler.getSeasonSavedData(world);
 
-            long difference = dayTime - lastDayTime; // Make sure seasons change correctly at the right time, you can add to the time 1d without a problem,
-            // World rejoin add few ticks worth of desync! Might have something to do with lastDayTimes. Need to find a way to purge when world closed.
+            long difference = dayTime - lastDayTime;
+
             // Skip if there is no difference
             if (difference == 0) {
                 return;

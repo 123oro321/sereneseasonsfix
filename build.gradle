@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'oros'
-version = '1.0-SNAPSHOT'
+version = '1.16.5-1.0.1'
 
 java {
     archivesBaseName = 'sereneseasonfix'
@@ -133,6 +133,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
     implementation fg.deobf("curse.maven:sereneseasons-291874:3894514")
+    // implementation fg.deobf("curse.maven:hourglass-511172:3488913")
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
@@ -156,7 +157,7 @@ jar {
                 "Specification-Vendor"    : "Or_OS",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Version"  : version,
                 "Implementation-Vendor"   : "Or_OS",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])

@@ -17,9 +17,12 @@ import sereneseasons.season.SeasonTime;
 
 import java.util.HashMap;
 
+import static oros.sereneseasonfix.Sereneseasonfix.LOGGER;
+
 @Mixin(SeasonHandler.class)
 public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProvider {
     private static final HashMap<World, Long> lastDayTimes = new HashMap<>();
+    private static final HashMap<World, Integer> tickSinceLastUpdate = new HashMap<>();
 
     /**
      * @author Or_OS
@@ -58,16 +61,22 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
             savedData.seasonCycleTicks += difference;
             savedData.seasonCycleTicks %= SeasonTime.ZERO.getCycleDuration();
 
-            if (world.getGameTime() % 20 == 0) {
+            Integer tick = tickSinceLastUpdate.get(world);
+            if (tick >= 20) {
+                LOGGER.debug("Sending season update");
                 SeasonHandler.sendSeasonUpdate(world);
+                tick %= 20;
             }
+            tickSinceLastUpdate.put(world,tick + 1);
             savedData.markDirty();
         }
     }
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event)
     {
+        LOGGER.info("Setting cached parameters");
         World world = (World) event.getWorld();
         lastDayTimes.put(world, world.getWorldInfo().getDayTime());
+        tickSinceLastUpdate.put(world, 0);
     }
 }

@@ -131,7 +131,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
     implementation fg.deobf("curse.maven:sereneseasons-291874:3894514")
     // implementation fg.deobf("curse.maven:hourglass-511172:3488913")
     // Real mod deobf dependency examples - these get remapped to your current mappings

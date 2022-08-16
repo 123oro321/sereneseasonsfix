@@ -57,9 +57,8 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
             if (difference == 0) {
                 return;
             }
-
-            savedData.seasonCycleTicks += difference;
-            savedData.seasonCycleTicks %= SeasonTime.ZERO.getCycleDuration();
+            int cycle_duration = SeasonTime.ZERO.getCycleDuration();
+            savedData.seasonCycleTicks = (int) (((savedData.seasonCycleTicks + difference) % cycle_duration + cycle_duration) % cycle_duration);
 
             Integer tick = tickSinceLastUpdate.get(world);
             if (tick >= 20) {

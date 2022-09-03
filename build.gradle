@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'oros'
-version = '1.16.5-1.0.2'
+version = '1.16.5-1.0.3'
 
 java {
     archivesBaseName = 'sereneseasonfix'

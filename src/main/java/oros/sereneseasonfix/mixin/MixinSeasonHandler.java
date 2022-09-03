@@ -14,13 +14,16 @@ import sereneseasons.api.season.SeasonHelper;
 import sereneseasons.handler.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 import sereneseasons.season.SeasonTime;
+import sereneseasons.config.SeasonsConfig;
+
+import java.util.HashMap;
 
 import static oros.sereneseasonfix.Sereneseasonfix.LOGGER;
 
 @Mixin(SeasonHandler.class)
 public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProvider {
-    private static Long lastDayTime;
-    private static Integer tickSinceLastUpdate;
+    private static final HashMap<World, Long> lastDayTimes = new HashMap<>();
+    private static final HashMap<World, Integer> tickSinceLastUpdate = new HashMap<>();
 
     /**
      * @author Or_OS
@@ -31,11 +34,13 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     public void onWorldTick(TickEvent.WorldTickEvent event) {
         World world = event.world;
 
-        if (event.phase == TickEvent.Phase.END && !world.isRemote() && World.OVERWORLD.equals(world.getDimensionKey())) {
+        // Tick only for world server within which is whitelisted
+        if (event.phase == TickEvent.Phase.END && !world.isRemote() && SeasonsConfig.isDimensionWhitelisted(world.getDimensionKey())) {
+
             long dayTime = world.getWorldInfo().getDayTime();
 
-            long tmpLastDayTime = lastDayTime;
-            lastDayTime = dayTime;
+            long lastDayTime = lastDayTimes.get(world);
+            lastDayTimes.put(world, dayTime);
 
             if (!SyncedConfig.getBooleanValue(SeasonsOption.PROGRESS_SEASON_WHILE_OFFLINE)) {
                 MinecraftServer server = world.getServer();
@@ -49,7 +54,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
             SeasonSavedData savedData = SeasonHandler.getSeasonSavedData(world);
 
-            long difference = dayTime - tmpLastDayTime;
+            long difference = dayTime - lastDayTime;
 
             // Skip if there is no difference
             if (difference == 0) {
@@ -58,10 +63,12 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
             int cycle_duration = SeasonTime.ZERO.getCycleDuration();
             savedData.seasonCycleTicks = (int) (((savedData.seasonCycleTicks + difference) % cycle_duration + cycle_duration) % cycle_duration);
 
-            if (tickSinceLastUpdate++ >= 20) {
+            Integer tick = tickSinceLastUpdate.get(world);
+            if (tick >= 20) {
                 SeasonHandler.sendSeasonUpdate(world);
-                tickSinceLastUpdate %= 20;
+                tick %= 20;
             }
+            tickSinceLastUpdate.put(world,tick + 1);
             savedData.markDirty();
         }
     }
@@ -69,10 +76,10 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     public void onWorldLoad(WorldEvent.Load event)
     {
         World world = (World) event.getWorld();
-        if (!world.isRemote() && World.OVERWORLD.equals(world.getDimensionKey())) {
+        if (!world.isRemote() && SeasonsConfig.isDimensionWhitelisted(world.getDimensionKey())) {
             LOGGER.info("Setting cached parameters");
-            lastDayTime = world.getWorldInfo().getDayTime();
-            tickSinceLastUpdate = 0;
+            lastDayTimes.put(world, world.getWorldInfo().getDayTime());
+            tickSinceLastUpdate.put(world, 0);
         }
     }
 }

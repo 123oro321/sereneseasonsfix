@@ -27,7 +27,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
     /**
      * @author Or_OS
-     * @reason It's broken m8
+     * @reason Merged with TimeSkipHandler and modified the logic to be more consistent
      */
     @Overwrite(remap = false)
     @SubscribeEvent

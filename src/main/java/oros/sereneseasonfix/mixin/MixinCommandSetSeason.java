@@ -10,14 +10,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sereneseasons.api.season.Season;
 import sereneseasons.command.CommandSetSeason;
-import sereneseasons.config.SeasonsConfig;
+import sereneseasons.config.ServerConfig;
 
 @Mixin(CommandSetSeason.class)
 public abstract class MixinCommandSetSeason {
 
     @Inject(method = "setSeason", at= @At("HEAD"), remap = false, cancellable = true)
     private static void setSeason(CommandSourceStack cs, Level world, Season.SubSeason season, CallbackInfoReturnable<Integer> cir) throws CommandRuntimeException {
-        if (!SeasonsConfig.isDimensionWhitelisted(world.dimension())) {
+        if (!ServerConfig.isDimensionWhitelisted(world.dimension())) {
             cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.setseason.notwhitelisted"), true);
             cir.setReturnValue(1);
         }

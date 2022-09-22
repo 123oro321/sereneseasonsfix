@@ -8,13 +8,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import sereneseasons.api.SSGameRules;
-import sereneseasons.api.config.SeasonsOption;
-import sereneseasons.api.config.SyncedConfig;
 import sereneseasons.api.season.SeasonHelper;
+import sereneseasons.config.ServerConfig;
 import sereneseasons.handler.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 import sereneseasons.season.SeasonTime;
-import sereneseasons.config.SeasonsConfig;
 
 import java.util.HashMap;
 
@@ -35,14 +33,14 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
         Level world = event.world;
 
         // Tick only for world server within which is whitelisted
-        if (event.phase == TickEvent.Phase.END && !world.isClientSide() && SeasonsConfig.isDimensionWhitelisted(world.dimension())) {
+        if (event.phase == TickEvent.Phase.END && !world.isClientSide() && ServerConfig.isDimensionWhitelisted(world.dimension())) {
 
             long dayTime = world.getLevelData().getDayTime();
 
             long lastDayTime = lastDayTimes.get(world);
             lastDayTimes.put(world, dayTime);
 
-            if (!SyncedConfig.getBooleanValue(SeasonsOption.PROGRESS_SEASON_WHILE_OFFLINE)) {
+            if (!(Boolean)ServerConfig.progressSeasonWhileOffline.get()) {
                 MinecraftServer server = world.getServer();
                 if (server != null && server.getPlayerList().getPlayerCount() == 0)
                     return;
@@ -76,7 +74,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     public void onWorldLoad(WorldEvent.Load event)
     {
         Level world = (Level) event.getWorld();
-        if (!world.isClientSide() && SeasonsConfig.isDimensionWhitelisted(world.dimension())) {
+        if (!world.isClientSide() && ServerConfig.isDimensionWhitelisted(world.dimension())) {
             LOGGER.info("Setting cached parameters");
             lastDayTimes.put(world, world.getLevelData().getDayTime());
             tickSinceLastUpdate.put(world, 0);

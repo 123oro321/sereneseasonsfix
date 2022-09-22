@@ -1,9 +1,9 @@
 package oros.sereneseasonfix.mixin;
 
-import net.minecraft.command.CommandException;
-import net.minecraft.command.CommandSource;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.commands.CommandRuntimeException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,9 +16,9 @@ import sereneseasons.config.SeasonsConfig;
 public abstract class MixinCommandSetSeason {
 
     @Inject(method = "setSeason", at= @At("HEAD"), remap = false, cancellable = true)
-    private static void setSeason(CommandSource cs, World world, Season.SubSeason season, CallbackInfoReturnable<Integer> cir) throws CommandException {
-        if (!SeasonsConfig.isDimensionWhitelisted(world.getDimensionKey())) {
-            cs.sendFeedback(new TranslationTextComponent("commands.sereneseasonsfix.setseason.notwhitelisted"), true);
+    private static void setSeason(CommandSourceStack cs, Level world, Season.SubSeason season, CallbackInfoReturnable<Integer> cir) throws CommandRuntimeException {
+        if (!SeasonsConfig.isDimensionWhitelisted(world.dimension())) {
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.setseason.notwhitelisted"), true);
             cir.setReturnValue(1);
         }
     }

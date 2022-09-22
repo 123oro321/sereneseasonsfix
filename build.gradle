@@ -15,15 +15,15 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'oros'
-version = '1.16.5-1.0.4'
+version = '1.17.1-1.0.4'
 
 java {
     archivesBaseName = 'sereneseasonfix'
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
+    toolchain.languageVersion = JavaLanguageVersion.of(16)
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20210309-1.16.5'
+    mappings channel: 'official', version: '1.17.1'
 
     runs {
         client {
@@ -91,8 +91,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
-    implementation fg.deobf("curse.maven:sereneseasons-291874:3894514")
+    minecraft 'net.minecraftforge:forge:1.17.1-37.1.1'
+    implementation fg.deobf("curse.maven:sereneseasons-291874:3438384")
+    implementation fg.deobf("curse.maven:hourglass-511172:3488917")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

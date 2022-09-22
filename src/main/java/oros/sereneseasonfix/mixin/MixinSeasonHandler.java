@@ -1,7 +1,7 @@
 package oros.sereneseasonfix.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,8 +22,8 @@ import static oros.sereneseasonfix.Sereneseasonfix.LOGGER;
 
 @Mixin(SeasonHandler.class)
 public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProvider {
-    private static final HashMap<World, Long> lastDayTimes = new HashMap<>();
-    private static final HashMap<World, Integer> tickSinceLastUpdate = new HashMap<>();
+    private static final HashMap<Level, Long> lastDayTimes = new HashMap<>();
+    private static final HashMap<Level, Integer> tickSinceLastUpdate = new HashMap<>();
 
     /**
      * @author Or_OS
@@ -32,19 +32,19 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     @Overwrite(remap = false)
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        World world = event.world;
+        Level world = event.world;
 
         // Tick only for world server within which is whitelisted
-        if (event.phase == TickEvent.Phase.END && !world.isRemote() && SeasonsConfig.isDimensionWhitelisted(world.getDimensionKey())) {
+        if (event.phase == TickEvent.Phase.END && !world.isClientSide() && SeasonsConfig.isDimensionWhitelisted(world.dimension())) {
 
-            long dayTime = world.getWorldInfo().getDayTime();
+            long dayTime = world.getLevelData().getDayTime();
 
             long lastDayTime = lastDayTimes.get(world);
             lastDayTimes.put(world, dayTime);
 
             if (!SyncedConfig.getBooleanValue(SeasonsOption.PROGRESS_SEASON_WHILE_OFFLINE)) {
                 MinecraftServer server = world.getServer();
-                if (server != null && server.getPlayerList().getCurrentPlayerCount() == 0)
+                if (server != null && server.getPlayerList().getPlayerCount() == 0)
                     return;
             }
 
@@ -69,16 +69,16 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
                 tick %= 20;
             }
             tickSinceLastUpdate.put(world,tick + 1);
-            savedData.markDirty();
+            savedData.setDirty();
         }
     }
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event)
     {
-        World world = (World) event.getWorld();
-        if (!world.isRemote() && SeasonsConfig.isDimensionWhitelisted(world.getDimensionKey())) {
+        Level world = (Level) event.getWorld();
+        if (!world.isClientSide() && SeasonsConfig.isDimensionWhitelisted(world.dimension())) {
             LOGGER.info("Setting cached parameters");
-            lastDayTimes.put(world, world.getWorldInfo().getDayTime());
+            lastDayTimes.put(world, world.getLevelData().getDayTime());
             tickSinceLastUpdate.put(world, 0);
         }
     }

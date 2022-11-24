@@ -15,7 +15,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'oros'
-version = '1.16.5-1.0.4'
+version = '1.16.5-1.0.5'
 
 java {
     archivesBaseName = 'sereneseasonfix'
@@ -92,7 +92,7 @@ repositories {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
-    implementation fg.deobf("curse.maven:sereneseasons-291874:3894514")
+    implementation fg.deobf("curse.maven:sereneseasons-291874:4099681")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

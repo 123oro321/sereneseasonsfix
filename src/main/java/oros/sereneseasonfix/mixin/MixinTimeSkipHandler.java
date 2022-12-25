@@ -10,7 +10,7 @@ import sereneseasons.handler.season.TimeSkipHandler;
 @Mixin(TimeSkipHandler.class)
 public abstract class MixinTimeSkipHandler {
     @Inject(method = "onWorldTick", at = @At("HEAD"), remap = false, cancellable = true)
-    private void onWorldTick(TickEvent.WorldTickEvent event, CallbackInfo ci) {
+    private static void onWorldTick(TickEvent.LevelTickEvent event, CallbackInfo ci) {
         ci.cancel();
     }
 }

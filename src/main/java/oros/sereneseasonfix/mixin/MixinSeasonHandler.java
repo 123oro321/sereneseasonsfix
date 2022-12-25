@@ -3,7 +3,7 @@ package oros.sereneseasonfix.mixin;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -29,8 +29,8 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
      */
     @Overwrite(remap = false)
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
-        Level world = event.world;
+    public void onWorldTick(TickEvent.LevelTickEvent event) {
+        Level world = event.level;
 
         // Tick only for world server within which is whitelisted
         if (event.phase == TickEvent.Phase.END && !world.isClientSide() && ServerConfig.isDimensionWhitelisted(world.dimension())) {
@@ -71,9 +71,9 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
         }
     }
     @SubscribeEvent
-    public void onWorldLoad(WorldEvent.Load event)
+    public void onWorldLoad(LevelEvent.Load event)
     {
-        Level world = (Level) event.getWorld();
+        Level world = (Level) event.getLevel();
         if (!world.isClientSide() && ServerConfig.isDimensionWhitelisted(world.dimension())) {
             LOGGER.info("Setting cached parameters");
             lastDayTimes.put(world, world.getLevelData().getDayTime());

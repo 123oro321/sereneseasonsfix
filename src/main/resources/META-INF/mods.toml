@@ -53,7 +53,7 @@ side = "BOTH"
 modId = "minecraft"
 mandatory = true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange = "[1.19.2,1.19.4)"
+versionRange = "[1.19.2,1.20)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -61,6 +61,6 @@ side = "BOTH"
 modId = "sereneseasons"
 mandatory = false
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange = "[1.19.2-8.1.0.24,1.19.2-8.3)"
+versionRange = "[1.19.2-8.1.0.24,1.19.4-8.4)"
 ordering = "AFTER"
 side = "BOTH"

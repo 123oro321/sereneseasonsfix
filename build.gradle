@@ -23,7 +23,7 @@ java {
 }
 
 minecraft {
-    mappings channel: 'official', version: '1.19.2'
+    mappings channel: 'official', version: '1.19.4'
 
     runs {
         client {
@@ -91,9 +91,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.2.0'
-    implementation fg.deobf("curse.maven:sereneseasons-291874:4037228")
-    implementation fg.deobf("curse.maven:hourglass-511172:3935107")
+    minecraft 'net.minecraftforge:forge:1.19.4-45.1.0'
+    implementation fg.deobf("curse.maven:sereneseasons-291874:4442006")
+    // implementation fg.deobf("curse.maven:hourglass-511172:3935107")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

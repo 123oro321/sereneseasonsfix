@@ -18,7 +18,7 @@ public abstract class MixinCommandSetSeason {
     @Inject(method = "setSeason", at= @At("HEAD"), remap = false, cancellable = true)
     private static void setSeason(CommandSourceStack cs, Level world, Season.SubSeason season, CallbackInfoReturnable<Integer> cir) throws CommandRuntimeException {
         if (!ServerConfig.isDimensionWhitelisted(world.dimension())) {
-            cs.sendSuccess(Component.translatable("commands.sereneseasonsfix.setseason.notwhitelisted"), true);
+            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.getseason.notwhitelisted"), true);
             cir.setReturnValue(1);
         }
     }

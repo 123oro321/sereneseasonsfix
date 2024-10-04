@@ -15,7 +15,7 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'oros'
-version = '1.20.1-1.0.8'
+version = '1.20.1-1.0.9'
 
 java {
     archivesBaseName = 'sereneseasonfix'
@@ -105,7 +105,6 @@ jar {
                 "Specification-Vendor"    : "Or_OS",
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : version,
                 "Implementation-Vendor"   : "Or_OS",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])

@@ -11,6 +11,8 @@ import sereneseasons.handler.season.TimeSkipHandler;
 public abstract class MixinTimeSkipHandler {
     @Inject(method = "onWorldTick", at = @At("HEAD"), remap = false, cancellable = true)
     private static void onWorldTick(TickEvent.LevelTickEvent event, CallbackInfo ci) {
-        ci.cancel();
+        if (oros.sereneseasonfix.config.ServerConfig.enable_overwrite.get()) {
+            ci.cancel();
+        }
     }
 }

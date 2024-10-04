@@ -6,7 +6,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sereneseasons.api.SSGameRules;
 import sereneseasons.api.season.SeasonHelper;
 import sereneseasons.config.ServerConfig;
@@ -16,58 +18,57 @@ import sereneseasons.season.SeasonTime;
 
 import java.util.HashMap;
 
-import static oros.sereneseasonfix.Sereneseasonfix.LOGGER;
+import static oros.sereneseasonfix.core.Sereneseasonfix.LOGGER;
 
 @Mixin(SeasonHandler.class)
 public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProvider {
     private static final HashMap<Level, Long> lastDayTimes = new HashMap<>();
     private static final HashMap<Level, Integer> tickSinceLastUpdate = new HashMap<>();
 
-    /**
-     * @author Or_OS
-     * @reason Merged with TimeSkipHandler and modified the logic to be more consistent
-     */
-    @Overwrite(remap = false)
-    @SubscribeEvent
-    public void onWorldTick(TickEvent.LevelTickEvent event) {
-        Level world = event.level;
+    @Inject(method = "onWorldTick", at= @At("HEAD"), remap = false, cancellable = true)
+    public void onWorldTick(TickEvent.LevelTickEvent event, CallbackInfo ci) {
+        if (oros.sereneseasonfix.config.ServerConfig.enable_overwrite.get()) {
+            ci.cancel();
 
-        // Tick only for world server within which is whitelisted
-        if (event.phase == TickEvent.Phase.END && !world.isClientSide() && ServerConfig.isDimensionWhitelisted(world.dimension())) {
+            Level world = event.level;
 
-            long dayTime = world.getLevelData().getDayTime();
+            // Tick only for world server within which is whitelisted
+            if (event.phase == TickEvent.Phase.END && !world.isClientSide() && sereneseasons.config.ServerConfig.isDimensionWhitelisted(world.dimension())) {
 
-            long lastDayTime = lastDayTimes.get(world);
-            lastDayTimes.put(world, dayTime);
+                long dayTime = world.getLevelData().getDayTime();
 
-            if (!(Boolean)ServerConfig.progressSeasonWhileOffline.get()) {
-                MinecraftServer server = world.getServer();
-                if (server != null && server.getPlayerList().getPlayerCount() == 0)
+                long lastDayTime = lastDayTimes.get(world);
+                lastDayTimes.put(world, dayTime);
+
+                if (!(Boolean) sereneseasons.config.ServerConfig.progressSeasonWhileOffline.get()) {
+                    MinecraftServer server = world.getServer();
+                    if (server != null && server.getPlayerList().getPlayerCount() == 0)
+                        return;
+                }
+
+                // Only tick seasons if the game rule is enabled
+                if (!world.getGameRules().getBoolean(SSGameRules.RULE_DOSEASONCYCLE))
                     return;
+
+                SeasonSavedData savedData = SeasonHandler.getSeasonSavedData(world);
+
+                long difference = dayTime - lastDayTime;
+
+                // Skip if there is no difference
+                if (difference == 0) {
+                    return;
+                }
+                int cycle_duration = SeasonTime.ZERO.getCycleDuration();
+                savedData.seasonCycleTicks = (int) (((savedData.seasonCycleTicks + difference) % cycle_duration + cycle_duration) % cycle_duration);
+
+                Integer tick = tickSinceLastUpdate.get(world);
+                if (tick >= 20) {
+                    SeasonHandler.sendSeasonUpdate(world);
+                    tick %= 20;
+                }
+                tickSinceLastUpdate.put(world, tick + 1);
+                savedData.setDirty();
             }
-
-            // Only tick seasons if the game rule is enabled
-            if (!world.getGameRules().getBoolean(SSGameRules.RULE_DOSEASONCYCLE))
-                return;
-
-            SeasonSavedData savedData = SeasonHandler.getSeasonSavedData(world);
-
-            long difference = dayTime - lastDayTime;
-
-            // Skip if there is no difference
-            if (difference == 0) {
-                return;
-            }
-            int cycle_duration = SeasonTime.ZERO.getCycleDuration();
-            savedData.seasonCycleTicks = (int) (((savedData.seasonCycleTicks + difference) % cycle_duration + cycle_duration) % cycle_duration);
-
-            Integer tick = tickSinceLastUpdate.get(world);
-            if (tick >= 20) {
-                SeasonHandler.sendSeasonUpdate(world);
-                tick %= 20;
-            }
-            tickSinceLastUpdate.put(world,tick + 1);
-            savedData.setDirty();
         }
     }
     @SubscribeEvent

@@ -11,8 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sereneseasons.command.CommandGetSeason;
 import sereneseasons.config.ServerConfig;
 
-import java.util.Locale;
-
 @Mixin(CommandGetSeason.class)
 public abstract class MixinCommandGetSeason {
 

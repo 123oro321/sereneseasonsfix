@@ -1,4 +1,5 @@
 {
   "commands.sereneseasonsfix.getseason.notwhitelisted": "Seasons are disabled for this dimension!",
-  "commands.sereneseasonsfix.setseason.notwhitelisted": "Seasons are disabled for this dimension!"
+  "commands.sereneseasonsfix.setseason.notwhitelisted": "Seasons are disabled for this dimension!",
+  "commands.sereneseasonsfix.debugseason.info": "Season time is: %s. World time is: %s. Delta is: %s"
 }

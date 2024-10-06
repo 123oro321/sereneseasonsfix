@@ -1,4 +1,5 @@
 {
-    "commands.sereneseasonsfix.getseason.notwhitelisted": "As estações estão desativadas para esta dimensão!",
-    "commands.sereneseasonsfix.setseason.notwhitelisted": "As estações estão desativadas para esta dimensão!"
+  "commands.sereneseasonsfix.get_season.not_whitelisted": "As estações estão desativadas para esta dimensão",
+  "commands.sereneseasonsfix.set_season.not_whitelisted": "As estações estão desativadas para esta dimensão",
+  "commands.sereneseasonsfix.time.sync_season.not_whitelisted": "As estações estão desativadas para esta dimensão"
 }

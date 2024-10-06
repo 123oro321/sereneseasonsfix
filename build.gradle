@@ -1,10 +1,15 @@
 buildscript {
     repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven {
+            name = 'Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
         mavenCentral()
     }
     dependencies {
+        classpath 'com.modrinth.minotaur:Minotaur:2.+'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 
@@ -12,12 +17,15 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'net.darkhax.curseforgegradle' version '[1.1.25,1.2)'
 }
 
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.modrinth.minotaur'
+apply plugin: 'net.minecraftforge.gradle'
 
 group = mod_group_id
-version = mod_version
+version = "${minecraft_version}-${mod_version}"
 
 base {
     archivesName = mod_id
@@ -142,4 +150,39 @@ tasks.named('jar', Jar).configure {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
+    projectId = "serene-seasons-fix" // This can be the project ID or the slug. Either will work!
+    versionNumber = mod_version
+    // You don't need to set this manually. Will fail if Modrinth has this version already
+    versionType = "release" // This is the default -- can also be `beta` or `alpha`
+    uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
+    gameVersions = ["1.20.1", "1.20.2"] // Must be an array, even with only one version
+    loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
+    dependencies {
+        required.project "serene-seasons"
+    }
+}
+
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+
+    // This token is used to authenticate with CurseForge. It should be handled
+    // with the same level of care and security as your actual password. You
+    // should never share your token with an untrusted source or publish it
+    // publicly to GitHub or embed it within a project. The best practice is to
+    // store this token in an environment variable or a build secret.
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    // Tells CurseForgeGradle to publish the output of the jar task. This will
+    // return a UploadArtifact object that can be used to further configure the
+    // file.
+    def mainFile = upload(650658, jar)
+    mainFile.releaseType = "release"
+    mainFile.changelog = ""
+    mainFile.addRequirement("serene-seasons")
+    mainFile.addModLoader("Forge")
+    mainFile.addEnvironment("Client","Server")
+    mainFile.addGameVersion("1.20.1","1.20.2")
 }

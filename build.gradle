@@ -1,3 +1,5 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 buildscript {
     repositories {
         maven {
@@ -157,7 +159,7 @@ modrinth {
     projectId = "serene-seasons-fix" // This can be the project ID or the slug. Either will work!
     versionNumber = mod_version
     // You don't need to set this manually. Will fail if Modrinth has this version already
-    versionType = "release" // This is the default -- can also be `beta` or `alpha`
+    versionType = release_type // This is the default -- can also be `beta` or `alpha`
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
     gameVersions = ["1.20.1", "1.20.2"] // Must be an array, even with only one version
     loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
@@ -166,7 +168,7 @@ modrinth {
     }
 }
 
-task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
 
     // This token is used to authenticate with CurseForge. It should be handled
     // with the same level of care and security as your actual password. You
@@ -179,10 +181,10 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     // return a UploadArtifact object that can be used to further configure the
     // file.
     def mainFile = upload(650658, jar)
-    mainFile.releaseType = "release"
+    mainFile.releaseType = release_type
     mainFile.changelog = ""
     mainFile.addRequirement("serene-seasons")
     mainFile.addModLoader("Forge")
-    mainFile.addEnvironment("Client","Server")
-    mainFile.addGameVersion("1.20.1","1.20.2")
+    mainFile.addEnvironment("Client", "Server")
+    mainFile.addGameVersion("1.20.1", "1.20.2")
 }

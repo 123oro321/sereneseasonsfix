@@ -6,7 +6,7 @@ import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.TimeArgument;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -50,10 +50,8 @@ public class SeasonTimeCommands {
         int seasonTime = seasonData.seasonCycleTicks;
         long dayTime = world.getLevelData().getDayTime();
         long delta = seasonTime - SeasonUtilities.calculateCycleTicks(dayTime);
-        cs.sendSuccess(() -> {
-            boolean whitelisted = ServerConfig.isDimensionWhitelisted(world.dimension());
-            return Component.translatable("commands.sereneseasonsfix.time.info", seasonTime, dayTime, delta, whitelisted);
-        }, true);
+        boolean whitelisted = ServerConfig.isDimensionWhitelisted(world.dimension());
+        cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.info", seasonTime, dayTime, delta, whitelisted), true);
         return (int) delta;
     }
 
@@ -62,10 +60,10 @@ public class SeasonTimeCommands {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
             SeasonUtilities.setSeasonCycleTicks(seasonData, world.getLevelData().getDayTime());
             SeasonHandler.sendSeasonUpdate(world);
-            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.time.sync_season.success"), true);
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.sync_season.success"), true);
             return seasonData.seasonCycleTicks;
         } else {
-            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.time.sync_season.not_whitelisted"), true);
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.sync_season.not_whitelisted"), true);
             return -1;
         }
     }
@@ -75,10 +73,10 @@ public class SeasonTimeCommands {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
             SeasonUtilities.setSeasonCycleTicks(seasonData, time);
             SeasonHandler.sendSeasonUpdate(world);
-            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.time.set_season.success", seasonData.seasonCycleTicks), true);
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.set_season.success", seasonData.seasonCycleTicks), true);
             return seasonData.seasonCycleTicks;
         } else {
-            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.time.set_season.not_whitelisted"), true);
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.set_season.not_whitelisted"), true);
             return -1;
         }
     }
@@ -88,10 +86,10 @@ public class SeasonTimeCommands {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
             SeasonUtilities.setSeasonCycleTicks(seasonData, seasonData.seasonCycleTicks + time);
             SeasonHandler.sendSeasonUpdate(world);
-            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.time.set_season.success", seasonData.seasonCycleTicks), true);
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.set_season.success", seasonData.seasonCycleTicks), true);
             return seasonData.seasonCycleTicks;
         } else {
-            cs.sendSuccess(() -> Component.translatable("commands.sereneseasonsfix.time.set_season.not_whitelisted"), true);
+            cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.set_season.not_whitelisted"), true);
             return -1;
         }
     }

@@ -12,7 +12,7 @@ import oros.sereneseasonsfix.config.ServerConfig;
 @Mixin(TimeSkipHandler.class)
 public abstract class MixinTimeSkipHandler {
     @Inject(method = "onWorldTick", at = @At("HEAD"), remap = false, cancellable = true)
-    private static void onWorldTick(TickEvent.LevelTickEvent event, CallbackInfo ci) {
+    private void onWorldTick(TickEvent.WorldTickEvent event, CallbackInfo ci) {
         if (ServerConfig.enable_override.get()) {
             ci.cancel();
         }

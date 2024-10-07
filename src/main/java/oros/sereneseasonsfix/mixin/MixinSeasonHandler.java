@@ -3,7 +3,7 @@ package oros.sereneseasonsfix.mixin;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,11 +30,11 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     private static final HashMap<Level, Integer> sereneseasonsfix$tickSinceLastUpdate = new HashMap<>();
 
     @Inject(method = "onWorldTick", at = @At("HEAD"), remap = false, cancellable = true)
-    public void onWorldTick(TickEvent.LevelTickEvent event, CallbackInfo ci) {
+    public void onWorldTick(TickEvent.WorldTickEvent event, CallbackInfo ci) {
         if (oros.sereneseasonsfix.config.ServerConfig.enable_override.get()) {
             ci.cancel();
 
-            Level world = event.level;
+            Level world = event.world;
 
             // Tick only for whitelisted worlds
             if (event.phase == TickEvent.Phase.END && !world.isClientSide() && SeasonUtilities.isWorldWhitelisted(world)) {
@@ -76,8 +76,8 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
     @Unique
     @SubscribeEvent
-    public void sereneseasonsfix$onWorldLoad(LevelEvent.Load event) {
-        Level world = (Level) event.getLevel();
+    public void sereneseasonsfix$onWorldLoad(WorldEvent.Load event) {
+        Level world = (Level) event.getWorld();
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             Sereneseasonsfix.LOGGER.info("Setting cached parameters");
             sereneseasonsfix$lastDayTimes.put(world, world.getLevelData().getDayTime());
@@ -87,8 +87,8 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
     @Unique
     @SubscribeEvent
-    public void sereneseasonsfix$onWorldUnload(LevelEvent.Unload event) {
-        Level world = (Level) event.getLevel();
+    public void sereneseasonsfix$onWorldUnload(WorldEvent.Unload event) {
+        Level world = (Level) event.getWorld();
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             Sereneseasonsfix.LOGGER.info("Clearing cached parameters");
             sereneseasonsfix$lastDayTimes.remove(world);

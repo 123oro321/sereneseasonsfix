@@ -1,7 +1,7 @@
 package oros.sereneseasonsfix;
 
-import net.minecraft.world.level.Level;
-import sereneseasons.config.ServerConfig;
+import net.minecraft.world.World;
+import sereneseasons.config.SeasonsConfig;
 import sereneseasons.season.SeasonSavedData;
 import sereneseasons.season.SeasonTime;
 
@@ -18,7 +18,7 @@ public class SeasonUtilities {
         seasonSavedData.setDirty();
     }
 
-    public static boolean isWorldWhitelisted(Level world) {
-        return !oros.sereneseasonsfix.config.ServerConfig.block_blacklisted_dimensions.get() || ServerConfig.isDimensionWhitelisted(world.dimension());
+    public static boolean isWorldWhitelisted(World world) {
+        return !oros.sereneseasonsfix.config.ServerConfig.block_blacklisted_dimensions.get() || SeasonsConfig.isDimensionWhitelisted(world.dimension());
     }
 }

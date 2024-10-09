@@ -1,7 +1,7 @@
 package oros.sereneseasonsfix.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,8 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import oros.sereneseasonsfix.SeasonUtilities;
 import sereneseasons.api.SSGameRules;
+import sereneseasons.api.config.SeasonsOption;
+import sereneseasons.api.config.SyncedConfig;
 import sereneseasons.api.season.SeasonHelper;
-import sereneseasons.config.ServerConfig;
 import sereneseasons.handler.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 
@@ -25,16 +26,16 @@ import oros.sereneseasonsfix.core.Sereneseasonsfix;
 @Mixin(SeasonHandler.class)
 public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProvider {
     @Unique
-    private static final HashMap<Level, Long> sereneseasonsfix$lastDayTimes = new HashMap<>();
+    private static final HashMap<World, Long> sereneseasonsfix$lastDayTimes = new HashMap<>();
     @Unique
-    private static final HashMap<Level, Integer> sereneseasonsfix$tickSinceLastUpdate = new HashMap<>();
+    private static final HashMap<World, Integer> sereneseasonsfix$tickSinceLastUpdate = new HashMap<>();
 
     @Inject(method = "onWorldTick", at = @At("HEAD"), remap = false, cancellable = true)
     public void onWorldTick(TickEvent.WorldTickEvent event, CallbackInfo ci) {
         if (oros.sereneseasonsfix.config.ServerConfig.enable_override.get()) {
             ci.cancel();
 
-            Level world = event.world;
+            World world = event.world;
 
             // Tick only for whitelisted worlds
             if (event.phase == TickEvent.Phase.END && !world.isClientSide() && SeasonUtilities.isWorldWhitelisted(world)) {
@@ -44,7 +45,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
                 long lastDayTime = sereneseasonsfix$lastDayTimes.get(world);
                 sereneseasonsfix$lastDayTimes.put(world, dayTime);
 
-                if (!(Boolean) ServerConfig.progressSeasonWhileOffline.get()) {
+                if (!SyncedConfig.getBooleanValue(SeasonsOption.PROGRESS_SEASON_WHILE_OFFLINE)) {
                     MinecraftServer server = world.getServer();
                     if (server != null && server.getPlayerList().getPlayerCount() == 0)
                         return;
@@ -77,7 +78,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     @Unique
     @SubscribeEvent
     public void sereneseasonsfix$onWorldLoad(WorldEvent.Load event) {
-        Level world = (Level) event.getWorld();
+        World world = (World) event.getWorld();
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             Sereneseasonsfix.LOGGER.info("Setting cached parameters");
             sereneseasonsfix$lastDayTimes.put(world, world.getLevelData().getDayTime());
@@ -88,7 +89,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     @Unique
     @SubscribeEvent
     public void sereneseasonsfix$onWorldUnload(WorldEvent.Unload event) {
-        Level world = (Level) event.getWorld();
+        World world = (World) event.getWorld();
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             Sereneseasonsfix.LOGGER.info("Clearing cached parameters");
             sereneseasonsfix$lastDayTimes.remove(world);

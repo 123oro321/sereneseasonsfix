@@ -12,7 +12,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import oros.sereneseasonsfix.SeasonUtilities;
-import sereneseasons.config.ServerConfig;
+import sereneseasons.config.SeasonsConfig;
 import sereneseasons.handler.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 
@@ -50,7 +50,7 @@ public class SeasonTimeCommands {
         int seasonTime = seasonData.seasonCycleTicks;
         long dayTime = world.getLevelData().getDayTime();
         long delta = seasonTime - SeasonUtilities.calculateCycleTicks(dayTime);
-        boolean whitelisted = ServerConfig.isDimensionWhitelisted(world.dimension());
+        boolean whitelisted = SeasonsConfig.isDimensionWhitelisted(world.dimension());
         cs.sendSuccess(new TranslatableComponent("commands.sereneseasonsfix.time.info", seasonTime, dayTime, delta, whitelisted), true);
         return (int) delta;
     }

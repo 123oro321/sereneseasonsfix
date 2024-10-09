@@ -11,15 +11,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import oros.sereneseasonsfix.SeasonUtilities;
+import oros.sereneseasonsfix.core.Sereneseasonsfix;
 import sereneseasons.api.SSGameRules;
+import sereneseasons.api.config.SeasonsOption;
+import sereneseasons.api.config.SyncedConfig;
 import sereneseasons.api.season.SeasonHelper;
-import sereneseasons.config.ServerConfig;
 import sereneseasons.handler.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 
 import java.util.HashMap;
-
-import oros.sereneseasonsfix.core.Sereneseasonsfix;
 
 
 @Mixin(SeasonHandler.class)
@@ -44,7 +44,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
                 long lastDayTime = sereneseasonsfix$lastDayTimes.get(world);
                 sereneseasonsfix$lastDayTimes.put(world, dayTime);
 
-                if (!(Boolean) ServerConfig.progressSeasonWhileOffline.get()) {
+                if (!SyncedConfig.getBooleanValue(SeasonsOption.PROGRESS_SEASON_WHILE_OFFLINE)) {
                     MinecraftServer server = world.getServer();
                     if (server != null && server.getPlayerList().getPlayerCount() == 0)
                         return;

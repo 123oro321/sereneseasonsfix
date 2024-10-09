@@ -111,7 +111,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:serene-seasons-291874:3693807")
+    implementation fg.deobf("curse.maven:serene-seasons-291874:3433685")
     //    implementation fg.deobf("curse.maven:hourglass-511172:3718132")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -158,7 +158,7 @@ modrinth {
     // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = release_type // This is the default -- can also be `beta` or `alpha`
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.18.1", "1.18.2"] // Must be an array, even with only one version
+    gameVersions = ["1.17.1"] // Must be an array, even with only one version
     loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
     dependencies {
         required.project "serene-seasons"
@@ -184,5 +184,5 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     mainFile.addRequirement("serene-seasons")
     mainFile.addModLoader("Forge")
     mainFile.addEnvironment("Client", "Server")
-    mainFile.addGameVersion("1.18.1", "1.18.2")
+    mainFile.addGameVersion("1.17.1")
 }

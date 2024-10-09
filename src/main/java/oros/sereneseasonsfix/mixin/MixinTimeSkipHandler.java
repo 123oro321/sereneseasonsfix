@@ -5,8 +5,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sereneseasons.handler.season.TimeSkipHandler;
 import oros.sereneseasonsfix.config.ServerConfig;
+import sereneseasons.handler.season.TimeSkipHandler;
 
 
 @Mixin(TimeSkipHandler.class)

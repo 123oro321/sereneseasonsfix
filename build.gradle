@@ -111,8 +111,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:serene-seasons-291874:3804257")
-//    implementation fg.deobf("curse.maven:hourglass-511172:3718132")
+    implementation fg.deobf("curse.maven:serene-seasons-291874:3693807")
+    //    implementation fg.deobf("curse.maven:hourglass-511172:3718132")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
@@ -163,6 +163,7 @@ modrinth {
     dependencies {
         required.project "serene-seasons"
     }
+    changelog = release_changelog
 }
 
 tasks.register('publishCurseForge', TaskPublishCurseForge) {
@@ -179,7 +180,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     // file.
     def mainFile = upload(650658, jar)
     mainFile.releaseType = release_type
-    mainFile.changelog = ""
+    mainFile.changelog = release_changelog
     mainFile.addRequirement("serene-seasons")
     mainFile.addModLoader("Forge")
     mainFile.addEnvironment("Client", "Server")

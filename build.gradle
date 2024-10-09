@@ -3,7 +3,6 @@ import net.darkhax.curseforgegradle.TaskPublishCurseForge
 buildscript {
     repositories {
         maven {
-            name = 'Mixin'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
         mavenCentral()
@@ -11,7 +10,6 @@ buildscript {
     dependencies {
         classpath 'com.modrinth.minotaur:Minotaur:2.+'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 

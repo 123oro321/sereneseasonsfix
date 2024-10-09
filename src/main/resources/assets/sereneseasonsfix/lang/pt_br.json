@@ -1,4 +1,9 @@
 {
-    "commands.sereneseasonsfix.getseason.notwhitelisted": "As estações estão desativadas para esta dimensão!",
-    "commands.sereneseasonsfix.setseason.notwhitelisted": "As estações estão desativadas para esta dimensão!"
+  "commands.sereneseasonsfix.get_season.not_whitelisted": "As estações estão desativadas para esta dimensão",
+  "commands.sereneseasonsfix.set_season.not_whitelisted": "As estações estão desativadas para esta dimensão",
+  "commands.sereneseasonsfix.time.sync_season.not_whitelisted": "Seasons are disabled for this dimension",
+  "commands.sereneseasonsfix.time.sync_season.success": "Synced season time with world time",
+  "commands.sereneseasonsfix.time.set_season.not_whitelisted": "Seasons are disabled for this dimension",
+  "commands.sereneseasonsfix.time.set_season.success": "Set the season time to %s",
+  "commands.sereneseasonsfix.time.info": "Season time is: %s\nWorld time is: %s\nDelta is: %s\nDimension whitelisted: %s"
 }

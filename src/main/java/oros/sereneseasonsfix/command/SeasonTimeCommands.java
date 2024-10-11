@@ -2,7 +2,6 @@ package oros.sereneseasonsfix.command;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.TimeArgument;
@@ -12,8 +11,8 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import oros.sereneseasonsfix.SeasonUtilities;
-import sereneseasons.config.ServerConfig;
-import sereneseasons.handler.season.SeasonHandler;
+import sereneseasons.init.ModConfig;
+import sereneseasons.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 
 
@@ -45,19 +44,19 @@ public class SeasonTimeCommands {
         );
     }
 
-    private static int infoSeasonTime(CommandSourceStack cs, Level world) throws CommandRuntimeException {
+    private static int infoSeasonTime(CommandSourceStack cs, Level world) {
         SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
         int seasonTime = seasonData.seasonCycleTicks;
         long dayTime = world.getLevelData().getDayTime();
         long delta = seasonTime - SeasonUtilities.calculateCycleTicks(dayTime);
         cs.sendSuccess(() -> {
-            boolean whitelisted = ServerConfig.isDimensionWhitelisted(world.dimension());
+            boolean whitelisted = ModConfig.seasons.isDimensionWhitelisted(world.dimension());
             return Component.translatable("commands.sereneseasonsfix.time.info", seasonTime, dayTime, delta, whitelisted);
         }, true);
         return (int) delta;
     }
 
-    private static int syncSeasonTime(CommandSourceStack cs, Level world) throws CommandRuntimeException {
+    private static int syncSeasonTime(CommandSourceStack cs, Level world) {
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
             SeasonUtilities.setSeasonCycleTicks(seasonData, world.getLevelData().getDayTime());
@@ -70,7 +69,7 @@ public class SeasonTimeCommands {
         }
     }
 
-    private static int setSeasonTime(CommandSourceStack cs, Level world, int time) throws CommandRuntimeException {
+    private static int setSeasonTime(CommandSourceStack cs, Level world, int time) {
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
             SeasonUtilities.setSeasonCycleTicks(seasonData, time);
@@ -83,7 +82,7 @@ public class SeasonTimeCommands {
         }
     }
 
-    private static int addSeasonTime(CommandSourceStack cs, Level world, int time) throws CommandRuntimeException {
+    private static int addSeasonTime(CommandSourceStack cs, Level world, int time) {
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
             SeasonUtilities.setSeasonCycleTicks(seasonData, seasonData.seasonCycleTicks + time);

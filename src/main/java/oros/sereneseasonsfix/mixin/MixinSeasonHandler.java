@@ -2,7 +2,6 @@ package oros.sereneseasonsfix.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,10 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import oros.sereneseasonsfix.SeasonUtilities;
 import sereneseasons.api.SSGameRules;
 import sereneseasons.api.season.SeasonHelper;
-import sereneseasons.config.ServerConfig;
-import sereneseasons.handler.season.SeasonHandler;
+import sereneseasons.init.ModConfig;
+import sereneseasons.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
 
+import glitchcore.event.TickEvent;
+import glitchcore.event.TickEvent.Phase;
 import java.util.HashMap;
 
 import oros.sereneseasonsfix.core.Sereneseasonsfix;
@@ -29,22 +30,22 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
     @Unique
     private static final HashMap<Level, Integer> sereneseasonsfix$tickSinceLastUpdate = new HashMap<>();
 
-    @Inject(method = "onWorldTick", at = @At("HEAD"), remap = false, cancellable = true)
-    public void onWorldTick(TickEvent.LevelTickEvent event, CallbackInfo ci) {
+    @Inject(method = "onLevelTick", at = @At("HEAD"), remap = false, cancellable = true)
+    private static void onLevelTick(TickEvent.Level event, CallbackInfo ci) {
         if (oros.sereneseasonsfix.config.ServerConfig.enable_override.get()) {
             ci.cancel();
 
-            Level world = event.level;
+            Level world = event.getLevel();
 
             // Tick only for whitelisted worlds
-            if (event.phase == TickEvent.Phase.END && !world.isClientSide() && SeasonUtilities.isWorldWhitelisted(world)) {
+            if (event.getPhase() == Phase.END && !world.isClientSide() && SeasonUtilities.isWorldWhitelisted(world)) {
 
                 long dayTime = world.getLevelData().getDayTime();
 
-                long lastDayTime = sereneseasonsfix$lastDayTimes.get(world);
+                long lastDayTime = sereneseasonsfix$lastDayTimes.getOrDefault(world, 0L);
                 sereneseasonsfix$lastDayTimes.put(world, dayTime);
 
-                if (!(Boolean) ServerConfig.progressSeasonWhileOffline.get()) {
+                if (!ModConfig.seasons.progressSeasonWhileOffline) {
                     MinecraftServer server = world.getServer();
                     if (server != null && server.getPlayerList().getPlayerCount() == 0)
                         return;
@@ -64,7 +65,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
                 SeasonSavedData savedData = SeasonHandler.getSeasonSavedData(world);
                 SeasonUtilities.setSeasonCycleTicks(savedData, savedData.seasonCycleTicks + difference);
 
-                Integer tick = sereneseasonsfix$tickSinceLastUpdate.get(world);
+                Integer tick = sereneseasonsfix$tickSinceLastUpdate.getOrDefault(world,0);
                 if (tick >= 20) {
                     SeasonHandler.sendSeasonUpdate(world);
                     tick %= 20;
@@ -76,7 +77,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
     @Unique
     @SubscribeEvent
-    public void sereneseasonsfix$onWorldLoad(LevelEvent.Load event) {
+    public void sereneseasonsfix$onWorldLoad(LevelEvent.Load event) { // TODO use libs
         Level world = (Level) event.getLevel();
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             Sereneseasonsfix.LOGGER.info("Setting cached parameters");
@@ -87,7 +88,7 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
 
     @Unique
     @SubscribeEvent
-    public void sereneseasonsfix$onWorldUnload(LevelEvent.Unload event) {
+    public void sereneseasonsfix$onWorldUnload(LevelEvent.Unload event) { // TODO use libs
         Level world = (Level) event.getLevel();
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             Sereneseasonsfix.LOGGER.info("Clearing cached parameters");

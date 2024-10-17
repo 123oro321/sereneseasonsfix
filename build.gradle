@@ -165,6 +165,7 @@ modrinth {
     dependencies {
         required.project "serene-seasons"
     }
+    changelog = release_changelog
 }
 
 tasks.register('publishCurseForge', TaskPublishCurseForge) {
@@ -181,7 +182,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     // file.
     def mainFile = upload(650658, jar)
     mainFile.releaseType = release_type
-    mainFile.changelog = ""
+    mainFile.changelog = release_changelog
     mainFile.addRequirement("serene-seasons")
     mainFile.addModLoader("Forge")
     mainFile.addEnvironment("Client", "Server")

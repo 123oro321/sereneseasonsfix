@@ -3,6 +3,7 @@ package oros.sereneseasonsfix.data;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -36,8 +37,7 @@ public class SeasonExtraSavedData extends SavedData {
                 savedData.setDirty();
                 return savedData;
             };
-            return (SeasonExtraSavedData)saveDataManager.computeIfAbsent(SeasonExtraSavedData::load, defaultSaveDataSupplier, "ex_seasons");
-        } else {
+            return (SeasonExtraSavedData)saveDataManager.computeIfAbsent(new SavedData.Factory<>(defaultSaveDataSupplier, SeasonExtraSavedData::load, DataFixTypes.LEVEL),"seasons_ex");        } else {
             return null;
         }
     }

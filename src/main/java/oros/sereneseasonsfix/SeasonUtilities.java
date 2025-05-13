@@ -27,8 +27,4 @@ public class SeasonUtilities {
     public static boolean isWorldWhitelisted(Level world) {
         return !oros.sereneseasonsfix.config.ServerConfig.block_blacklisted_dimensions.get() || ServerConfig.isDimensionWhitelisted(world.dimension());
     }
-
-    public static int getCalculatedZero() {
-        return ServerConfig.startingSubSeason.get() * ServerConfig.subSeasonDuration.get();
-    }
 }

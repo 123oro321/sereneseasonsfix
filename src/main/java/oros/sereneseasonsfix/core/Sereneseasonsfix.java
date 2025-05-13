@@ -20,6 +20,7 @@ public class Sereneseasonsfix {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public Sereneseasonsfix() {
+        @SuppressWarnings("removal")
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);

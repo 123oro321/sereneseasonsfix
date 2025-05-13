@@ -159,7 +159,7 @@ modrinth {
     // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = release_type // This is the default -- can also be `beta` or `alpha`
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.19.3", "1.19.4"] // Must be an array, even with only one version
+    gameVersions = ["1.19.2", "1.19.3", "1.19.4"] // Must be an array, even with only one version
     loaders = ["forge"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
     dependencies {
         required.project "serene-seasons"
@@ -180,9 +180,9 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     // file.
     def mainFile = upload(650658, jar)
     mainFile.releaseType = release_type
-    mainFile.changelog = ""
+    mainFile.changelog = "Added support for 1.19.2. Added support for different starting seasons. Updated info command and added set_start to modify starting season time"
     mainFile.addRequirement("serene-seasons")
     mainFile.addModLoader("Forge")
     mainFile.addEnvironment("Client", "Server")
-    mainFile.addGameVersion("1.19.3", "1.19.4")
+    mainFile.addGameVersion("1.19.2", "1.19.3", "1.19.4")
 }

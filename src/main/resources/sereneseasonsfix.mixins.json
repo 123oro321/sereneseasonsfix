@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "oros.sereneseasonsfix.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "sereneseasonsfix.refmap.json",
   "mixins": [
     "MixinCommandGetSeason",
@@ -10,8 +10,7 @@
     "MixinSeasonHandler",
     "MixinTimeSkipHandler"
   ],
-  "client": [
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

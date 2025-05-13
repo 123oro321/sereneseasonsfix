@@ -12,6 +12,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import oros.sereneseasonsfix.SeasonUtilities;
+import oros.sereneseasonsfix.data.SeasonExtraSavedData;
 import sereneseasons.config.SeasonsConfig;
 import sereneseasons.handler.season.SeasonHandler;
 import sereneseasons.season.SeasonSavedData;
@@ -37,6 +38,10 @@ public class SeasonTimeCommands {
                                     World world = (ctx.getSource()).getLevel();
                                     return setSeasonTime(ctx.getSource(), world, IntegerArgumentType.getInteger(ctx, "time"));
                                 })))
+                                .then(Commands.literal("set_start").then(Commands.argument("time", TimeArgument.time()).executes((ctx) -> {
+                                    World world = (ctx.getSource()).getLevel();
+                                    return setSeasonStartTime(ctx.getSource(), world, IntegerArgumentType.getInteger(ctx, "time"));
+                                })))
                                 .then(Commands.literal("add").then(Commands.argument("time", TimeArgument.time()).executes((ctx) -> {
                                     World world = (ctx.getSource()).getLevel();
                                     return addSeasonTime(ctx.getSource(), world, IntegerArgumentType.getInteger(ctx, "time"));
@@ -47,18 +52,21 @@ public class SeasonTimeCommands {
 
     private static int infoSeasonTime(CommandSource cs, World world) throws CommandException {
         SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
+        SeasonExtraSavedData seasonExtraData = SeasonExtraSavedData.getExtraSeasonSavedData(world);
         int seasonTime = seasonData.seasonCycleTicks;
+        int startSeasonTime = seasonExtraData.startingSeasonCycleTicks;
         long dayTime = world.getLevelData().getDayTime();
-        long delta = seasonTime - SeasonUtilities.calculateCycleTicks(dayTime);
+        long delta = SeasonUtilities.calculateCycleTicks(seasonTime - dayTime - startSeasonTime);
         boolean whitelisted = SeasonsConfig.isDimensionWhitelisted(world.dimension());
-        cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.info", seasonTime, dayTime, delta, whitelisted), true);
+        cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.info", seasonTime, startSeasonTime, dayTime, delta, whitelisted), true);
         return (int) delta;
     }
 
     private static int syncSeasonTime(CommandSource cs, World world) throws CommandException {
         if (SeasonUtilities.isWorldWhitelisted(world)) {
             SeasonSavedData seasonData = SeasonHandler.getSeasonSavedData(world);
-            SeasonUtilities.setSeasonCycleTicks(seasonData, world.getLevelData().getDayTime());
+            SeasonExtraSavedData seasonExtraData = SeasonExtraSavedData.getExtraSeasonSavedData(world);
+            SeasonUtilities.setSeasonCycleTicks(seasonData, world.getLevelData().getDayTime() + seasonExtraData.startingSeasonCycleTicks);
             SeasonHandler.sendSeasonUpdate(world);
             cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.sync_season.success"), true);
             return seasonData.seasonCycleTicks;
@@ -88,6 +96,19 @@ public class SeasonTimeCommands {
             SeasonHandler.sendSeasonUpdate(world);
             cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.set_season.success", seasonData.seasonCycleTicks), true);
             return seasonData.seasonCycleTicks;
+        } else {
+            cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.set_season.not_whitelisted"), true);
+            return -1;
+        }
+    }
+
+    private static int setSeasonStartTime(CommandSource cs, World world, int time) throws CommandException {
+        if (SeasonUtilities.isWorldWhitelisted(world)) {
+            SeasonExtraSavedData seasonExtraData  = SeasonExtraSavedData.getExtraSeasonSavedData(world);
+            SeasonUtilities.setSeasonStartCycleTicks(seasonExtraData, time);
+            SeasonHandler.sendSeasonUpdate(world);
+            cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.set_season.success", seasonExtraData.startingSeasonCycleTicks), true);
+            return seasonExtraData.startingSeasonCycleTicks;
         } else {
             cs.sendSuccess(new TranslationTextComponent("commands.sereneseasonsfix.time.set_season.not_whitelisted"), true);
             return -1;

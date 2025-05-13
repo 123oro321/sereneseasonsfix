@@ -10,8 +10,7 @@
     "MixinSeasonHandler",
     "MixinTimeSkipHandler"
   ],
-  "client": [
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

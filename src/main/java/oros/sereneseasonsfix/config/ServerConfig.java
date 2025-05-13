@@ -14,7 +14,7 @@ public class ServerConfig {
     static {
         BUILDER.push("general_settings");
         enable_override = BUILDER.comment("If Serene Season Fix alternate season logic should be used.").define("enable_season_time_override", true);
-        block_blacklisted_dimensions = BUILDER.comment("If season ticking and commads on dimensions outside the whitelist should be disabled.").define("block_blacklisted", true);
+        block_blacklisted_dimensions = BUILDER.comment("If season ticking and commands on dimensions outside the whitelist should be disabled.").define("block_blacklisted", true);
         BUILDER.pop();
 
         SPEC = BUILDER.build();

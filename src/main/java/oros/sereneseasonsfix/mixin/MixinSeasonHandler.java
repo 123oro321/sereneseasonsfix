@@ -1,6 +1,7 @@
 package oros.sereneseasonsfix.mixin;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -10,7 +11,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import oros.sereneseasonsfix.SeasonUtilities;
+import oros.sereneseasonsfix.data.SeasonExtraSavedData;
 import sereneseasons.api.SSGameRules;
 import sereneseasons.api.season.SeasonHelper;
 import sereneseasons.config.ServerConfig;
@@ -20,6 +23,8 @@ import sereneseasons.season.SeasonSavedData;
 import java.util.HashMap;
 
 import oros.sereneseasonsfix.core.Sereneseasonsfix;
+
+import static oros.sereneseasonsfix.data.SeasonExtraSavedData.getExtraSeasonSavedData;
 
 
 @Mixin(SeasonHandler.class)
@@ -93,6 +98,22 @@ public abstract class MixinSeasonHandler implements SeasonHelper.ISeasonDataProv
             Sereneseasonsfix.LOGGER.info("Clearing cached parameters");
             sereneseasonsfix$lastDayTimes.remove(world);
             sereneseasonsfix$tickSinceLastUpdate.remove(world);
+        }
+    }
+
+    @Inject(method = "/lambda\\$getSeasonSavedData\\$\\d/", at = @At(
+            value = "RETURN"// This is where the lambda will return the object
+    ),
+            remap = false)
+    private static void afterInitSeasonTicksSet(ServerLevel world, CallbackInfoReturnable<SeasonSavedData> cir) {
+        SeasonSavedData data = cir.getReturnValue();
+        if (data != null) {
+            Sereneseasonsfix.LOGGER.info("Setting startingSeasonCycleTicks = {}", data.seasonCycleTicks);
+            SeasonExtraSavedData extraSavedData = getExtraSeasonSavedData(world);
+            extraSavedData.startingSeasonCycleTicks = data.seasonCycleTicks;
+            extraSavedData.setDirty();
+        } else {
+            Sereneseasonsfix.LOGGER.warn("Couldn't get initialized seasonCycleTicks");
         }
     }
 }
